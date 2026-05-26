@@ -33,3 +33,11 @@ output "postgres_db_instance_id" {
 output "rds_security_group_id" {
   value = module.rds.rds_security_group_id
 }
+
+output "dynamodb_table_name" {
+  value = module.dynamodb.dynamodb_table_name
+}
+
+output "dynamodb_table_arn" {
+  value = module.dynamodb.dynamodb_table_arn
+}
