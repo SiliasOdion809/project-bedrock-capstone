@@ -8,3 +8,14 @@ module "eks" {
   vpc_id             = module.networking.vpc_id
   private_subnet_ids = module.networking.private_subnets
 }
+
+module "rds" {
+  source = "./rds"
+
+  vpc_id             = module.networking.vpc_id
+  private_subnet_ids = module.networking.private_subnets
+}
+
+module "dynamodb" {
+  source = "./dynamodb"
+}
