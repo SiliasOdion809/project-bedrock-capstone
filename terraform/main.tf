@@ -22,3 +22,27 @@ module "rds" {
 module "dynamodb" {
   source = "./dynamodb"
 }
+
+module "s3" {
+  source = "./s3"
+
+  bucket_name = "bedrock-assets-alt-soe-025-3757"
+}
+
+module "iam" {
+  source = "./iam"
+}
+
+module "lambda" {
+  source = "./lambda"
+
+  bucket_name = module.s3.bucket_name
+
+  bucket_arn = module.s3.bucket_arn
+
+  lambda_role_arn = module.iam.lambda_role_arn
+}
+
+module "monitoring" {
+  source = "./monitoring"
+}

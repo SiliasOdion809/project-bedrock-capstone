@@ -41,3 +41,15 @@ output "dynamodb_table_name" {
 output "dynamodb_table_arn" {
   value = module.dynamodb.dynamodb_table_arn
 }
+
+output "assets_bucket_name" {
+  value = module.s3.bucket_name
+}
+
+output "lambda_function_name" {
+  value = module.lambda.lambda_name
+}
+
+output "lambda_function_arn" {
+  value = module.lambda.lambda_arn
+}
