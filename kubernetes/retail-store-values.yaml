@@ -1,0 +1,16 @@
+namespace: retail-app
+
+orders:
+  fullnameOverride: orders
+
+checkout:
+  fullnameOverride: checkout
+
+cart:
+  fullnameOverride: carts
+
+catalog:
+  fullnameOverride: catalog
+
+ui:
+  fullnameOverride: ui
