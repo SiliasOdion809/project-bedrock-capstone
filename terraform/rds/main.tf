@@ -41,8 +41,8 @@ resource "aws_db_instance" "mysql" {
   engine_version         = "8.0"
   instance_class         = "db.t3.micro"
 
-  username = "admin"
-  password = "StrongPassword123!"
+  username = var.mysql_username
+  password = var.mysql_password
 
   publicly_accessible    = false
   skip_final_snapshot    = true
@@ -58,8 +58,8 @@ resource "aws_db_instance" "postgres" {
   engine_version         = "15"
   instance_class         = "db.t3.micro"
 
-  username = "postgresadmin"
-  password = "StrongPassword123!"
+  username = var.postgres_username
+  password = var.postgres_password
 
   publicly_accessible    = false
   skip_final_snapshot    = true
