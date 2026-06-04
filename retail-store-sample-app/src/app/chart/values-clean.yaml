@@ -1,0 +1,27 @@
+cart:
+  app:
+    persistence:
+      provider: dynamodb
+      dynamodb:
+        tableName: bedrock-orders
+        create: false
+        region: us-east-1
+
+catalog:
+  db:
+    create: false
+
+checkout:
+  app:
+    persistence:
+      provider: redis
+
+orders:
+  db:
+    create: false
+
+rabbitmq:
+  create: true
+
+redis:
+  create: true

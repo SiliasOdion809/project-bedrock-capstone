@@ -1,0 +1,48 @@
+cart:
+  app:
+    persistence:
+      provider: dynamodb
+      dynamodb:
+        tableName: bedrock-orders
+        create: false
+        region: us-east-1
+
+catalog:
+  db:
+    create: false
+
+  app:
+    persistence:
+      provider: mysql
+      endpoint: bedrock-mysql.cmvoi6gewsez.us-east-1.rds.amazonaws.com
+      port: 3306
+      dbName: catalog
+      username: catalog
+      password: StrongMysqlPass123!
+
+checkout:
+  app:
+    persistence:
+      provider: redis
+
+redis:
+  create: true
+
+orders:
+  db:
+    create: false
+
+  app:
+    persistence:
+      provider: postgres
+      endpoint: bedrock-postgres.cmvoi6gewsez.us-east-1.rds.amazonaws.com
+      port: 5432
+      dbName: orders
+      username: postgresadmin
+      password: StrongPostgresPass123!
+
+  messaging:
+    provider: rabbitmq
+
+rabbitmq:
+  create: true

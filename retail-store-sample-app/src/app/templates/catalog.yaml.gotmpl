@@ -1,0 +1,11 @@
+{{if env "TILT_MODE" }}
+image:
+  repository: 561876735341.dkr.ecr.us-east-1.amazonaws.com/retail-catalog
+  tag: latest
+{{end}}
+
+{{if env "RANDOM_PASSWORD" }}
+mysql:
+  secret:
+    password: {{ env "RANDOM_PASSWORD" | default "" }}
+{{end}}
