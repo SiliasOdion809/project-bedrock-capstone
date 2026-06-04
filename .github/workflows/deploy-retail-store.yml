@@ -1,0 +1,95 @@
+name: Deploy Retail Store
+
+on:
+  workflow_run:
+    workflows: ["Terraform Apply"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig \
+          --region us-east-1 \
+          --name project-bedrock-cluster
+
+      - name: Verify Cluster
+        run: |
+          kubectl get nodes
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Install Helmfile
+        run: |
+          HELMFILE_VERSION=v0.170.1
+
+          curl -Lo helmfile.tar.gz \
+          https://github.com/helmfile/helmfile/releases/download/${HELMFILE_VERSION}/helmfile_${HELMFILE_VERSION#v}_linux_amd64.tar.gz
+
+          tar -xzf helmfile.tar.gz
+
+          chmod +x helmfile
+
+          sudo mv helmfile /usr/local/bin/
+
+          helmfile --version
+
+      - name: Deploy Retail Store
+        working-directory: retail-store-sample-app/src/app
+        run: |
+          helmfile apply
+
+      - name: Wait For Deployments
+        run: |
+          kubectl rollout status deployment/catalog --timeout=10m
+          kubectl rollout status deployment/carts --timeout=10m
+          kubectl rollout status deployment/orders --timeout=10m
+          kubectl rollout status deployment/checkout --timeout=10m
+          kubectl rollout status deployment/ui --timeout=10m
+
+      - name: Show Pods
+        run: |
+          kubectl get pods
+
+      - name: Show Services
+        run: |
+          kubectl get svc
+
+      - name: Get ALB DNS
+        run: |
+          echo "Waiting for Load Balancer..."
+
+          sleep 120
+
+          kubectl get ingress
+
+          ALB_DNS=$(kubectl get ingress \
+            -o jsonpath='{.items[0].status.loadBalancer.ingress[0].hostname}')
+
+          echo ""
+          echo "======================================"
+          echo "Retail Store URL:"
+          echo "http://${ALB_DNS}"
+          echo "======================================"
