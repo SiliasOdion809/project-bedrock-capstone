@@ -60,6 +60,19 @@ jobs:
         run: |
           helm version
 
+      - name: Check Helm Plugins Before Install
+        run: |
+          helm version
+          helm plugin list
+
+      - name: Install Helm Diff Plugin
+        run: |
+          helm plugin install https://github.com/databus23/helm-diff
+
+      - name: Verify Helm Diff Plugin
+        run: |
+          helm plugin list
+
       - name: Install Helmfile
         run: |
           HELMFILE_VERSION=v0.170.1
