@@ -15,8 +15,8 @@ module "rds" {
   vpc_id             = module.networking.vpc_id
   private_subnet_ids = module.networking.private_subnets
 
-  mysql_password     = "StrongMysqlPass123!"
-  postgres_password  = "StrongPostgresPass123!"
+  mysql_password    = "StrongMysqlPass123!"
+  postgres_password = "StrongPostgresPass123!"
 }
 
 module "dynamodb" {
@@ -45,4 +45,8 @@ module "lambda" {
 
 module "monitoring" {
   source = "./monitoring"
+}
+
+module "ecr" {
+  source = "./ecr"
 }

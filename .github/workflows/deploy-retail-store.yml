@@ -21,6 +21,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Debug Repository Structure
+        run: |
+          echo "Current directory:"
+          pwd
+
+          echo ""
+          echo "Repository root contents:"
+          ls -la
+
+          echo ""
+          echo "Searching for retail-store-sample-app:"
+          find . -type d | grep retail-store    
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
