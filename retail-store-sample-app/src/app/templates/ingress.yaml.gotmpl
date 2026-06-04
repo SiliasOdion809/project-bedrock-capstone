@@ -1,17 +1,12 @@
 {{ if env "INGRESS" }}
 ingress:
-  enabled: ${ingress_enabled}
+  enabled: true
+
   annotations:
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+
   hosts:
     - localhost
-{{ end }}
-{{ if env "NODE_PORT" }}
-service:
-  type: NodePort
-  nodePort: {{ env "NODE_PORT" }}
-{{ end }}
-{{ if env "LOAD_BALANCER" }}
-service:
-  type: LoadBalancer
 {{ end }}
