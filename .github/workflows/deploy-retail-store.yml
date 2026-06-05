@@ -50,6 +50,13 @@ jobs:
       - name: Verify Cluster
         run: |
           kubectl get nodes
+          
+      - name: Create Namespace
+        run: |
+          kubectl create namespace retail-app \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          kubectl get ns retail-app    
 
       - name: Install Helm
         uses: azure/setup-helm@v4
@@ -174,7 +181,7 @@ jobs:
               echo "**Application URL:** http://${ALB_DNS}" >> $GITHUB_STEP_SUMMARY
               echo "" >> $GITHUB_STEP_SUMMARY
               echo "Deployment completed successfully." >> $GITHUB_STEP_SUMMARY
-              
+
               exit 0
             fi
 
@@ -185,3 +192,14 @@ jobs:
           echo "ERROR: ALB hostname was not assigned"
           kubectl describe ingress ui
           exit 1
+          
+      - name: Smoke Test Application
+        run: |
+          ALB_DNS=$(kubectl get ingress ui \
+            -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+
+          echo "Testing application..."
+
+          curl -I http://${ALB_DNS}
+
+          curl -s http://${ALB_DNS} | head -20
