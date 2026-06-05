@@ -105,6 +105,8 @@ jobs:
 
       - name: Deploy Retail Store
         working-directory: retail-store-sample-app/src/app
+        env:
+          INGRESS: "true"
         run: |
           helmfile --log-level debug apply
 
@@ -124,19 +126,55 @@ jobs:
           kubectl get svc
           kubectl get ingress
 
+      - name: Investigate Deployment State
+        run: |
+          echo "=== Namespaces ==="
+          kubectl get ns
+
+          echo "=== Deployments ==="
+          kubectl get deployments -A
+
+          echo "=== Pods ==="
+          kubectl get pods -A
+
+          echo "=== Services ==="
+          kubectl get svc -A
+
+          echo "=== Ingresses ==="
+          kubectl get ingress -A
+
+          echo "=== Events ==="
+          kubectl get events -A --sort-by=.lastTimestamp | tail -50
+
+      - name: Verify Ingress
+        run: |
+          kubectl get ingress ui -o wide
+          kubectl describe ingress ui   
+
       - name: Get ALB DNS
         run: |
-          echo "Waiting for Load Balancer..."
+          echo "Waiting for ALB provisioning..."
 
-          sleep 120
+          for i in {1..30}; do
 
-          kubectl get ingress
+            kubectl get ingress
 
-          ALB_DNS=$(kubectl get ingress \
-            -o jsonpath='{.items[0].status.loadBalancer.ingress[0].hostname}')
+            ALB_DNS=$(kubectl get ingress ui \
+              -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
 
-          echo ""
-          echo "======================================"
-          echo "Retail Store URL:"
-          echo "http://${ALB_DNS}"
-          echo "======================================"
+            if [ -n "$ALB_DNS" ]; then
+              echo ""
+              echo "===================================="
+              echo "Retail Store URL:"
+              echo "http://${ALB_DNS}"
+              echo "===================================="
+              exit 0
+            fi
+
+            echo "ALB not ready yet... retrying in 20 seconds"
+            sleep 20
+          done
+
+          echo "ERROR: ALB hostname was not assigned"
+          kubectl describe ingress ui
+          exit 1

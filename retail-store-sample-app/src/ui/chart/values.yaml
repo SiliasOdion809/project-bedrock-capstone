@@ -102,18 +102,17 @@ app:
 
 ## Ingress for load balancer
 ingress:
-  enabled: false
-  # className: ""
-  annotations: {}
-  #   alb.ingress.kubernetes.io/scheme: internet-facing
-  #   alb.ingress.kubernetes.io/target-type: ip
-  #   alb.ingress.kubernetes.io/healthcheck-path: /actuator/health/liveness
+  enabled: true
+
+  className: alb
+
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+
   tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+
   hosts: []
-  #  - "chart-example.local"
 
 ingresses: []
   # - name: default
