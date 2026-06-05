@@ -28,6 +28,18 @@ spec:
         - name: rabbitmq
           image: "{{ .Values.rabbitmq.image.repository }}:{{ .Values.rabbitmq.image.tag }}"
           imagePullPolicy: {{ .Values.rabbitmq.image.pullPolicy }}
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: orders-rabbitmq
+                  key: RETAIL_ORDERS_MESSAGING_RABBITMQ_USERNAME
+
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: orders-rabbitmq
+                  key: RETAIL_ORDERS_MESSAGING_RABBITMQ_PASSWORD
           ports:
           - name: amqp
             containerPort: 5672
