@@ -1,12 +1,9 @@
 {{ if env "INGRESS" }}
 ingress:
   enabled: true
-  ingressClassName: alb
+  className: alb
 
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-
-  hosts:
-    - localhost
 {{ end }}
