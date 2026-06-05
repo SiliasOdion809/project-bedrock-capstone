@@ -93,8 +93,8 @@ app:
       secret:
         create: true
         name: orders-rabbitmq
-        username: ""
-        password: ""
+        username: retailuser
+        password: RetailPass123!
 
 postgresql:
   create: false
