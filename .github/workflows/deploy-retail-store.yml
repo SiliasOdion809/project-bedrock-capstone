@@ -168,6 +168,13 @@ jobs:
               echo "Retail Store URL:"
               echo "http://${ALB_DNS}"
               echo "===================================="
+
+              echo "## Retail Store Deployment Successful 🚀" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "**Application URL:** http://${ALB_DNS}" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "Deployment completed successfully." >> $GITHUB_STEP_SUMMARY
+              
               exit 0
             fi
 
