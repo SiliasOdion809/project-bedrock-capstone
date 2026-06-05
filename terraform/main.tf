@@ -50,3 +50,14 @@ module "monitoring" {
 module "ecr" {
   source = "./ecr"
 }
+
+module "addons" {
+
+  source = "./addons"
+
+  cluster_name = module.eks.cluster_name
+
+  region = var.aws_region
+
+  vpc_id = module.networking.vpc_id
+}

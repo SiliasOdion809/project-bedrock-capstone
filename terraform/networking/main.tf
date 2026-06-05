@@ -20,6 +20,8 @@ resource "aws_subnet" "public_1" {
 
     "kubernetes.io/role/elb" = "1"
 
+    "kubernetes.io/cluster/project-bedrock-cluster" = "shared"
+
     Project = var.project_tag
   }
 }
@@ -35,6 +37,8 @@ resource "aws_subnet" "public_2" {
 
     "kubernetes.io/role/elb" = "1"
 
+    "kubernetes.io/cluster/project-bedrock-cluster" = "shared"
+    
     Project = var.project_tag
   }
 }
@@ -49,6 +53,8 @@ resource "aws_subnet" "private_1" {
 
     "kubernetes.io/role/internal-elb" = "1"
 
+    "kubernetes.io/cluster/project-bedrock-cluster" = "shared"
+
     Project = var.project_tag
   }
 }
@@ -62,6 +68,8 @@ resource "aws_subnet" "private_2" {
     Name = "private-subnet-2"
 
     "kubernetes.io/role/internal-elb" = "1"
+
+    "kubernetes.io/cluster/project-bedrock-cluster" = "shared"
 
     Project = var.project_tag
   }

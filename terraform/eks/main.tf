@@ -21,6 +21,10 @@ module "eks" {
       min_size       = 1
       max_size       = 2
       desired_size   = 2
+
+        iam_role_additional_policies = {
+        AWSLoadBalancerController = "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
+      }
     }
   }
 
