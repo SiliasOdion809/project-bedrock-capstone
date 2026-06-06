@@ -3,7 +3,7 @@ variable "aws_region" {
 }
 
 variable "mysql_username" {
-  default = "catalog"
+  default = "admin"
 }
 
 variable "mysql_password" {
@@ -11,7 +11,7 @@ variable "mysql_password" {
 }
 
 variable "postgres_username" {
-  default = "orders"
+  default = "postgresadmin"
 }
 
 variable "postgres_password" {
