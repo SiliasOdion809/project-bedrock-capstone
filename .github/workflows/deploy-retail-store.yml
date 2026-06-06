@@ -153,6 +153,19 @@ jobs:
             fi
             '
 
+          kubectl wait \
+            --for=condition=Ready pod/postgres-init \
+            --timeout=2m || true
+
+          kubectl logs postgres-init
+
+          STATUS=$(kubectl get pod postgres-init -o jsonpath='{.status.phase}')
+
+          if [ "$STATUS" != "Succeeded" ]; then
+            echo "Orders database initialization failed"
+            exit 1
+          fi
+
       - name: Install Helm
         uses: azure/setup-helm@v4
         with:
@@ -229,30 +242,30 @@ jobs:
 
       - name: Show Pod Details
         run: |
-          kubectl get pods -o wide
-          kubectl get deployments
-          kubectl get svc
-          kubectl get ingress
+          kubectl get pods -o wide -n retail-app
+          kubectl get deployments -n retail-app
+          kubectl get svc -n retail-app
+          kubectl get ingress -n retail-app
 
       - name: Investigate Deployment State
         run: |
           echo "=== Namespaces ==="
-          kubectl get ns
+          kubectl get ns -n retail-app
 
           echo "=== Deployments ==="
-          kubectl get deployments -A
+          kubectl get deployments -n retail-app
 
           echo "=== Pods ==="
-          kubectl get pods -A
+          kubectl get pods -n retail-app
 
           echo "=== Services ==="
-          kubectl get svc -A
+          kubectl get svc -n retail-app
 
           echo "=== Ingresses ==="
-          kubectl get ingress -A
+          kubectl get ingress -n retail-app
 
           echo "=== Events ==="
-          kubectl get events -A --sort-by=.lastTimestamp | tail -50
+          kubectl get events -n retail-app --sort-by=.lastTimestamp | tail -50
 
       - name: Verify Ingress
         run: |
@@ -265,7 +278,7 @@ jobs:
 
           for i in {1..30}; do
 
-            kubectl get ingress
+            kubectl get ingress -n retail-app
 
             ALB_DNS=$(kubectl get ingress ui -n retail-app \
               -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
