@@ -91,9 +91,8 @@ jobs:
           kubectl delete pod mysql-init --ignore-not-found=true
 
           kubectl run mysql-init \
-          
-            --restart=Never \
             --image=mysql:8 \
+            --restart=Never \
             --env="MYSQL_PWD=${MYSQL_PASSWORD}" \
             --command -- \
             mysql \
@@ -107,9 +106,8 @@ jobs:
           kubectl delete pod mysql-init --ignore-not-found=true
 
           kubectl run postgres-init \
-
-            --restart=Never \
             --image=postgres:15 \
+            --restart=Never \
             --env="PGPASSWORD=${POSTGRES_PASSWORD}" \
             --command -- \
             bash -c '
