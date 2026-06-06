@@ -26,10 +26,37 @@ resource "aws_iam_role_policy_attachment" "lambda_basic" {
 
 resource "aws_iam_user" "bedrock_dev_view" {
   name = "bedrock-dev-view"
+
+  tags = {
+    Project = "karatu-2025-capstone"
+  }
 }
 
 resource "aws_iam_user_policy_attachment" "readonly" {
   user = aws_iam_user.bedrock_dev_view.name
 
   policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
+}
+
+resource "aws_iam_user_policy" "bedrock_dev_s3_upload" {
+  name = "bedrock-dev-s3-upload"
+  user = aws_iam_user.bedrock_dev_view.name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+      {
+        Effect = "Allow"
+
+        Action = [
+          "s3:PutObject"
+        ]
+
+        Resource = [
+          "${var.assets_bucket_arn}/*"
+        ]
+      }
+    ]
+  })
 }

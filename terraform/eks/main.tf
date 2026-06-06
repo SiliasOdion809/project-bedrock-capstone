@@ -5,6 +5,14 @@ module "eks" {
   cluster_name    = "project-bedrock-cluster"
   cluster_version = "1.34"
 
+  cluster_enabled_log_types = [
+    "api",
+    "audit",
+    "authenticator",
+    "controllerManager",
+    "scheduler"
+  ]
+
   enable_cluster_creator_admin_permissions = true
 
   vpc_id = var.vpc_id
@@ -18,13 +26,13 @@ module "eks" {
   eks_managed_node_groups = {
     bedrock_nodes = {
       instance_types = ["t3.small"]
-      min_size       = 1
-      max_size       = 2
-      desired_size   = 2
+      min_size       = 2
+      max_size       = 3
+      desired_size   = 3
 
-        iam_role_additional_policies = {
+      iam_role_additional_policies = {
         AWSLoadBalancerController = "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
-        DynamoDBAccess = var.dynamodb_policy_arn
+        DynamoDBAccess            = var.dynamodb_policy_arn
       }
     }
   }

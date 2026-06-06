@@ -5,8 +5,8 @@ module "networking" {
 module "eks" {
   source = "./eks"
 
-  vpc_id             = module.networking.vpc_id
-  private_subnet_ids = module.networking.private_subnets
+  vpc_id              = module.networking.vpc_id
+  private_subnet_ids  = module.networking.private_subnets
   dynamodb_policy_arn = module.iam.dynamodb_policy_arn
 }
 
@@ -32,6 +32,8 @@ module "s3" {
 
 module "iam" {
   source = "./iam"
+
+  assets_bucket_arn = module.s3.assets_bucket_arn
 }
 
 module "lambda" {

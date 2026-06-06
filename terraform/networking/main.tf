@@ -38,7 +38,7 @@ resource "aws_subnet" "public_2" {
     "kubernetes.io/role/elb" = "1"
 
     "kubernetes.io/cluster/project-bedrock-cluster" = "shared"
-    
+
     Project = var.project_tag
   }
 }

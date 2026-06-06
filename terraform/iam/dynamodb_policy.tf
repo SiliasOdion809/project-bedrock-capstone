@@ -14,10 +14,10 @@ resource "aws_iam_policy" "dynamodb_access" {
           "dynamodb:Query",
           "dynamodb:Scan"
         ]
-       Resource = [
-        "arn:aws:dynamodb:us-east-1:561876735341:table/bedrock-orders",
-        "arn:aws:dynamodb:us-east-1:561876735341:table/bedrock-orders/*"
-]
+        Resource = [
+          "arn:aws:dynamodb:us-east-1:561876735341:table/bedrock-orders",
+          "arn:aws:dynamodb:us-east-1:561876735341:table/bedrock-orders/*"
+        ]
       }
     ]
   })
