@@ -53,3 +53,21 @@ output "lambda_function_name" {
 output "lambda_function_arn" {
   value = module.lambda.lambda_arn
 }
+
+output "mysql_username" {
+  value = var.mysql_username
+}
+
+output "mysql_password" {
+  value     = var.mysql_password
+  sensitive = true
+}
+
+output "postgres_username" {
+  value = var.postgres_username
+}
+
+output "postgres_password" {
+  value     = var.postgres_password
+  sensitive = true
+}

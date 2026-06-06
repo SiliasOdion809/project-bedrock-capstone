@@ -1,0 +1,6 @@
+app:
+  persistence:
+    provider: dynamodb
+
+    dynamodb:
+      tableName: "{{ env "DYNAMODB_TABLE" }}"

@@ -47,10 +47,26 @@ jobs:
           --region us-east-1 \
           --name project-bedrock-cluster
 
+      - name: Get Terraform Outputs
+        working-directory: terraform
+
+        run: |
+          echo "MYSQL_ENDPOINT=$(terraform output -raw mysql_endpoint)" >> $GITHUB_ENV
+
+          echo "POSTGRES_ENDPOINT=$(terraform output -raw postgres_endpoint)" >> $GITHUB_ENV
+
+          echo "DYNAMODB_TABLE=$(terraform output -raw dynamodb_table_name)" >> $GITHUB_ENV
+
+          echo "MYSQL_USERNAME=$(terraform output -raw mysql_username)" >> $GITHUB_ENV
+          echo "MYSQL_PASSWORD=$(terraform output -raw mysql_password)" >> $GITHUB_ENV
+
+          echo "POSTGRES_USERNAME=$(terraform output -raw postgres_username)" >> $GITHUB_ENV
+          echo "POSTGRES_PASSWORD=$(terraform output -raw postgres_password)" >> $GITHUB_ENV
+
       - name: Verify Cluster
         run: |
           kubectl get nodes
-          
+
       - name: Create Namespace
         run: |
           kubectl create namespace retail-app \
@@ -113,7 +129,14 @@ jobs:
       - name: Deploy Retail Store
         working-directory: retail-store-sample-app/src/app
         env:
+          MYSQL_ENDPOINT: ${{ env.MYSQL_ENDPOINT }}
+          POSTGRES_ENDPOINT: ${{ env.POSTGRES_ENDPOINT }}
+          DYNAMODB_TABLE: ${{ env.DYNAMODB_TABLE }}
           INGRESS: "true"
+          MYSQL_USERNAME: ${{ env.MYSQL_USERNAME }}
+          MYSQL_PASSWORD: ${{ env.MYSQL_PASSWORD }}
+          POSTGRES_USERNAME: ${{ env.POSTGRES_USERNAME }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         run: |
           helmfile --log-level debug apply
 

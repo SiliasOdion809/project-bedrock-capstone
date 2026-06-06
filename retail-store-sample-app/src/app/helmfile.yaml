@@ -6,11 +6,13 @@ releases:
     values:
       - templates/components.yaml.gotmpl
       - templates/catalog.yaml.gotmpl
+      - templates/catalog-rds.yaml.gotmpl
+      - templates/catalog-secret.yaml.gotmpl
       - app:
           persistence:
             provider: mysql
         mysql:
-          create: true
+          create: false
 
   - name: "carts"
     namespace: "retail-app"
@@ -19,11 +21,12 @@ releases:
     values:
       - templates/components.yaml.gotmpl
       - templates/carts.yaml.gotmpl
+      - templates/carts-dynamodb.yaml.gotmpl
       - app:
           persistence:
             provider: dynamodb
         dynamodb:
-          create: true
+          create: false
 
   - name: "orders"
     namespace: "retail-app"
@@ -32,13 +35,15 @@ releases:
     values:
       - templates/components.yaml.gotmpl
       - templates/orders.yaml.gotmpl
+      - templates/orders-rds.yaml.gotmpl
+      - templates/orders-secret.yaml.gotmpl
       - app:
           persistence:
             provider: postgres
           messaging:
             provider: rabbitmq
         postgresql:
-          create: true
+          create: false
         rabbitmq:
           create: true
 
