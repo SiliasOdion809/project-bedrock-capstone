@@ -127,41 +127,7 @@ jobs:
               echo "orders database already exists"
             fi
             '
-
-      - name: Verify Databases
-        run: |
-          kubectl run mysql-check \
-          --restart=Never \
-          --image=mysql:8 \
-          --env="MYSQL_PWD=${MYSQL_PASSWORD}" \
-          --command -- \
-          sh -c '
-            HOST=$(echo "${MYSQL_ENDPOINT}" | cut -d: -f1)
-            PORT=$(echo "${MYSQL_ENDPOINT}" | cut -d: -f2)
-
-            mysql \
-              -h "$HOST" \
-              -P "$PORT" \
-              -u "${MYSQL_USERNAME}" \
-              -e "SHOW DATABASES;"
-          '
-
-          kubectl run postgres-check \
-          --restart=Never \
-          --image=postgres:15 \
-          --env="PGPASSWORD=${POSTGRES_PASSWORD}" \
-          --command -- \
-          sh -c '
-            HOST=$(echo "${POSTGRES_ENDPOINT}" | cut -d: -f1)
-            PORT=$(echo "${POSTGRES_ENDPOINT}" | cut -d: -f2)
-
-            psql \
-              -h "$HOST" \
-              -p "$PORT" \
-              -U "${POSTGRES_USERNAME}" \
-              -d postgres \
-              -c "\l"
-          '
+            
       - name: Install Helm
         uses: azure/setup-helm@v4
         with:
