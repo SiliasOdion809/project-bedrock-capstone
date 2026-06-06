@@ -130,7 +130,9 @@ jobs:
             --image=postgres:15 \
             --restart=Never \
             --env="PGPASSWORD=${POSTGRES_PASSWORD}" \
-            --command -- \
+            --env="POSTGRES_USERNAME=${POSTGRES_USERNAME}" \
+            --env="POSTGRES_ENDPOINT=${POSTGRES_ENDPOINT}" \
+                      --command -- \
             bash -c '
             HOST=$(echo "$POSTGRES_ENDPOINT" | cut -d":" -f1)
             PORT=$(echo "$POSTGRES_ENDPOINT" | cut -d":" -f2)
