@@ -7,6 +7,7 @@ module "eks" {
 
   vpc_id             = module.networking.vpc_id
   private_subnet_ids = module.networking.private_subnets
+  dynamodb_policy_arn = module.iam.dynamodb_policy_arn
 }
 
 module "rds" {

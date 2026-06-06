@@ -24,6 +24,7 @@ module "eks" {
 
         iam_role_additional_policies = {
         AWSLoadBalancerController = "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
+        DynamoDBAccess = var.dynamodb_policy_arn
       }
     }
   }
