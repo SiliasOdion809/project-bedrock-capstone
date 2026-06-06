@@ -319,6 +319,21 @@ jobs:
 
           echo "Testing application..."
 
+          echo "Waiting for ALB DNS propagation..."
+
+          for i in {1..30}; do
+
+            if nslookup ${ALB_DNS} >/dev/null 2>&1; then
+              echo "DNS resolved"
+              break
+            fi
+
+            echo "Waiting..."
+            sleep 20
+
+          done
+
           curl -I http://${ALB_DNS}
+          curl -s http://${ALB_DNS} | head -20
 
           curl -s http://${ALB_DNS} | head -20
