@@ -103,7 +103,7 @@ jobs:
 
       - name: Initialize Orders Database
         run: |
-          kubectl delete pod mysql-init --ignore-not-found=true
+          kubectl delete pod postgres-init --ignore-not-found=true
 
           kubectl run postgres-init \
             --image=postgres:15 \
@@ -127,7 +127,7 @@ jobs:
               echo "orders database already exists"
             fi
             '
-            
+
       - name: Install Helm
         uses: azure/setup-helm@v4
         with:
