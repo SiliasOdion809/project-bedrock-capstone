@@ -51,6 +51,8 @@ jobs:
         working-directory: terraform
 
         run: |
+          terraform output
+
           echo "MYSQL_ENDPOINT=$(terraform output -raw mysql_endpoint)" >> $GITHUB_ENV
 
           echo "POSTGRES_ENDPOINT=$(terraform output -raw postgres_endpoint)" >> $GITHUB_ENV
@@ -92,7 +94,7 @@ jobs:
       - name: Initialize Orders Database
         run: |
           kubectl delete pod mysql-init --ignore-not-found=true
-          
+
           kubectl run postgres-init \
             --rm -i --restart=Never \
             --image=postgres:15 \
