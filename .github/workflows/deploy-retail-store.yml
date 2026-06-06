@@ -88,19 +88,40 @@ jobs:
 
       - name: Initialize Catalog Database
         run: |
+
           kubectl delete pod mysql-init --ignore-not-found=true
 
           kubectl run mysql-init \
             --image=mysql:8 \
             --restart=Never \
             --env="MYSQL_PWD=${MYSQL_PASSWORD}" \
+            --env="MYSQL_ENDPOINT=${MYSQL_ENDPOINT}" \
+            --env="MYSQL_USERNAME=${MYSQL_USERNAME}" \
             --command -- \
-            mysql \
-            -h ${MYSQL_ENDPOINT} \
-            -u ${MYSQL_USERNAME} \
-            -e "CREATE DATABASE IF NOT EXISTS catalog;"
+            sh -c '
+              HOST=$(echo "$MYSQL_ENDPOINT" | cut -d":" -f1)
+              PORT=$(echo "$MYSQL_ENDPOINT" | cut -d":" -f2)
 
+              mysql \
+                -h "$HOST" \
+                -P "$PORT" \
+                -u "$MYSQL_USERNAME" \
+                -e "CREATE DATABASE IF NOT EXISTS catalog;"
+            '
 
+          kubectl wait \
+            --for=condition=Ready pod/mysql-init \
+            --timeout=2m || true
+
+          kubectl logs mysql-init
+
+          STATUS=$(kubectl get pod mysql-init -o jsonpath='{.status.phase}')
+
+          if [ "$STATUS" != "Succeeded" ]; then
+            echo "Catalog database initialization failed"
+            exit 1
+          fi
+          
       - name: Initialize Orders Database
         run: |
           kubectl delete pod postgres-init --ignore-not-found=true
@@ -118,9 +139,13 @@ jobs:
               -tAc "SELECT 1 FROM pg_database WHERE datname='\''orders'\''")
 
             if [ "$EXISTS" != "1" ]; then
+              HOST=$(echo "${POSTGRES_ENDPOINT}" | cut -d':' -f1)
+              PORT=$(echo "${POSTGRES_ENDPOINT}" | cut -d':' -f2)
+
               psql \
-                -h '"${POSTGRES_ENDPOINT}"' \
-                -U '"${POSTGRES_USERNAME}"' \
+                -h "$HOST" \
+                -p "$PORT" \
+                -U "${POSTGRES_USERNAME}"
                 -d postgres \
                 -c "CREATE DATABASE orders;"
             else
