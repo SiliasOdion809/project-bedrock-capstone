@@ -112,15 +112,25 @@ jobs:
           kubectl wait \
             --for=condition=Ready pod/mysql-init \
             --timeout=2m || true
+            kubectl logs mysql-init || true
 
-          kubectl logs mysql-init
+            kubectl describe pod mysql-init || true
 
-          STATUS=$(kubectl get pod mysql-init -o jsonpath='{.status.phase}')
+            STATUS=$(kubectl get pod mysql-init -o jsonpath='{.status.phase}')
 
-          if [ "$STATUS" != "Succeeded" ]; then
-            echo "Catalog database initialization failed"
-            exit 1
-          fi
+            echo "Pod Status: $STATUS"
+
+            if [ "$STATUS" != "Succeeded" ]; then
+              echo "Catalog database initialization failed"
+
+              echo "=== MYSQL INIT LOGS ==="
+              kubectl logs mysql-init || true
+
+              echo "=== MYSQL INIT DESCRIPTION ==="
+              kubectl describe pod mysql-init || true
+
+              exit 1
+            fi
 
       - name: Initialize Orders Database
         run: |
