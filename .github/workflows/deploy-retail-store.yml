@@ -72,8 +72,73 @@ jobs:
           kubectl create namespace retail-app \
             --dry-run=client -o yaml | kubectl apply -f -
 
-          kubectl get ns retail-app    
+          kubectl get ns retail-app   
 
+      - name: Initialize Catalog Database
+        run: |
+          kubectl delete pod mysql-init --ignore-not-found=true
+
+          kubectl run mysql-init \
+            --rm -i --restart=Never \
+            --image=mysql:8 \
+            --env="MYSQL_PWD=${MYSQL_PASSWORD}" \
+            --command -- \
+            mysql \
+            -h ${MYSQL_ENDPOINT} \
+            -u ${MYSQL_USERNAME} \
+            -e "CREATE DATABASE IF NOT EXISTS catalog;"
+
+
+      - name: Initialize Orders Database
+        run: |
+          kubectl delete pod mysql-init --ignore-not-found=true
+          
+          kubectl run postgres-init \
+            --rm -i --restart=Never \
+            --image=postgres:15 \
+            --env="PGPASSWORD=${POSTGRES_PASSWORD}" \
+            --command -- \
+            bash -c '
+            EXISTS=$(psql \
+              -h '"${POSTGRES_ENDPOINT}"' \
+              -U '"${POSTGRES_USERNAME}"' \
+              -d postgres \
+              -tAc "SELECT 1 FROM pg_database WHERE datname='\''orders'\''")
+
+            if [ "$EXISTS" != "1" ]; then
+              psql \
+                -h '"${POSTGRES_ENDPOINT}"' \
+                -U '"${POSTGRES_USERNAME}"' \
+                -d postgres \
+                -c "CREATE DATABASE orders;"
+            else
+              echo "orders database already exists"
+            fi
+            '
+
+      - name: Verify Databases
+        run: |
+          kubectl run mysql-check \
+            --rm -i --restart=Never \
+            --image=mysql:8 \
+            --env="MYSQL_PWD=${MYSQL_PASSWORD}" \
+            --command -- \
+            mysql \
+            -h ${MYSQL_ENDPOINT} \
+            -u ${MYSQL_USERNAME} \
+            -e "SHOW DATABASES;"
+
+          kubectl run postgres-check \
+            --rm -i --restart=Never \
+            --image=postgres:15 \
+            --env="PGPASSWORD=${POSTGRES_PASSWORD}" \
+            --command -- \
+            psql \
+            -h ${POSTGRES_ENDPOINT} \
+            -U ${POSTGRES_USERNAME} \
+            -d postgres \
+            -c "\l"
+     
       - name: Install Helm
         uses: azure/setup-helm@v4
         with:
@@ -142,12 +207,11 @@ jobs:
 
       - name: Wait For Deployments
         run: |
-          kubectl get deployments
-          kubectl rollout status deployment/catalog --timeout=10m || true
-          kubectl rollout status deployment/carts --timeout=10m || true
-          kubectl rollout status deployment/orders --timeout=10m || true
-          kubectl rollout status deployment/checkout --timeout=10m || true
-          kubectl rollout status deployment/ui --timeout=10m || true
+          kubectl rollout status deployment/catalog -n retail-app --timeout=10m || true
+          kubectl rollout status deployment/carts -n retail-app --timeout=10m || true
+          kubectl rollout status deployment/orders -n retail-app --timeout=10m || true
+          kubectl rollout status deployment/checkout -n retail-app --timeout=10m || true
+          kubectl rollout status deployment/ui -n retail-app --timeout=10m || true
 
       - name: Show Pod Details
         run: |
@@ -178,8 +242,8 @@ jobs:
 
       - name: Verify Ingress
         run: |
-          kubectl get ingress ui -o wide
-          kubectl describe ingress ui   
+          kubectl get ingress ui -n retail-app
+          kubectl describe ingress ui -n retail-app
 
       - name: Get ALB DNS
         run: |
@@ -189,7 +253,7 @@ jobs:
 
             kubectl get ingress
 
-            ALB_DNS=$(kubectl get ingress ui \
+            ALB_DNS=$(kubectl get ingress ui -n retail-app \
               -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
 
             if [ -n "$ALB_DNS" ]; then
@@ -218,7 +282,7 @@ jobs:
           
       - name: Smoke Test Application
         run: |
-          ALB_DNS=$(kubectl get ingress ui \
+          ALB_DNS=$(kubectl get ingress ui -n retail-app \
             -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 
           echo "Testing application..."

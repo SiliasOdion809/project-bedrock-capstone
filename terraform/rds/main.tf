@@ -44,6 +44,8 @@ resource "aws_db_instance" "mysql" {
   username = var.mysql_username
   password = var.mysql_password
 
+  #db_name = "catalog"
+
   publicly_accessible = false
   skip_final_snapshot = true
 
@@ -60,6 +62,8 @@ resource "aws_db_instance" "postgres" {
 
   username = var.postgres_username
   password = var.postgres_password
+
+  #db_name = "orders"
 
   publicly_accessible = false
   skip_final_snapshot = true
