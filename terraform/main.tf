@@ -34,6 +34,8 @@ module "iam" {
   source = "./iam"
 
   assets_bucket_arn = module.s3.assets_bucket_arn
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  oidc_provider     = module.eks.oidc_provider
 }
 
 module "lambda" {
@@ -63,4 +65,6 @@ module "addons" {
   region = var.aws_region
 
   vpc_id = module.networking.vpc_id
+
+  alb_controller_role_arn = module.iam.alb_controller_role_arn
 }

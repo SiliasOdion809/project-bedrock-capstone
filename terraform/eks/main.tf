@@ -31,8 +31,8 @@ module "eks" {
       desired_size   = 3
 
       iam_role_additional_policies = {
-        AWSLoadBalancerController = "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
-        DynamoDBAccess            = var.dynamodb_policy_arn
+
+        DynamoDBAccess = var.dynamodb_policy_arn
       }
     }
   }

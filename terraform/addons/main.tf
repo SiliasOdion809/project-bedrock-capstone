@@ -18,6 +18,15 @@ resource "helm_release" "aws_load_balancer_controller" {
       clusterName = var.cluster_name
       region      = var.region
       vpcId       = var.vpc_id
+
+      serviceAccount = {
+        create = true
+        name   = "aws-load-balancer-controller"
+
+        annotations = {
+          "eks.amazonaws.com/role-arn" = var.alb_controller_role_arn
+        }
+      }
     })
   ]
 }

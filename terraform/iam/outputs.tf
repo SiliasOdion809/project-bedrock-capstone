@@ -9,3 +9,7 @@ output "dynamodb_policy_arn" {
 output "bedrock_dev_view_arn" {
   value = aws_iam_user.bedrock_dev_view.arn
 }
+
+output "alb_controller_role_arn" {
+  value = aws_iam_role.alb_controller.arn
+}
