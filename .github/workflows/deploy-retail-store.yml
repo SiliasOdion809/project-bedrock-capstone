@@ -91,7 +91,7 @@ jobs:
 
           kubectl delete pod mysql-init --ignore-not-found=true
 
-          kubectl run mysql-init \
+          kubectl run mysql-init -n retail-app \
             --image=mysql:8 \
             --restart=Never \
             --env="MYSQL_PWD=${MYSQL_PASSWORD}" \
@@ -112,11 +112,11 @@ jobs:
           kubectl wait \
             --for=condition=Ready pod/mysql-init \
             --timeout=2m || true
-            kubectl logs mysql-init || true
+            kubectl logs mysql-init -n retail-app || true
 
-            kubectl describe pod mysql-init || true
+            kubectl describe pod mysql-init -n retail-app || true
 
-            STATUS=$(kubectl get pod mysql-init -o jsonpath='{.status.phase}')
+            STATUS=$(kubectl get pod mysql-init -n retail-app -o jsonpath='{.status.phase}')
 
             echo "Pod Status: $STATUS"
 
@@ -124,19 +124,19 @@ jobs:
               echo "Catalog database initialization failed"
 
               echo "=== MYSQL INIT LOGS ==="
-              kubectl logs mysql-init || true
+              kubectl logs mysql-init -n retail-app || true
 
               echo "=== MYSQL INIT DESCRIPTION ==="
-              kubectl describe pod mysql-init || true
+              kubectl describe pod mysql-init -n retail-app || true
 
               exit 1
             fi
 
       - name: Initialize Orders Database
         run: |
-          kubectl delete pod postgres-init --ignore-not-found=true
+          kubectl delete pod postgres-init -n retail-app --ignore-not-found=true
 
-          kubectl run postgres-init \
+          kubectl run postgres-init -n retail-app \
             --image=postgres:15 \
             --restart=Never \
             --env="PGPASSWORD=${POSTGRES_PASSWORD}" \
@@ -173,9 +173,9 @@ jobs:
             pod/postgres-init \
             --timeout=2m
 
-          kubectl logs postgres-init
+          kubectl logs postgres-init -n retail-app || true
 
-          STATUS=$(kubectl get pod postgres-init -o jsonpath='{.status.phase}')
+          STATUS=$(kubectl get pod postgres-init -n retail-app -o jsonpath='{.status.phase}')
 
           if [ "$STATUS" != "Succeeded" ]; then
             echo "Orders database initialization failed"
