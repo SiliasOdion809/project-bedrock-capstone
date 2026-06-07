@@ -111,7 +111,7 @@ jobs:
 
           kubectl wait \
             --for=condition=Ready pod/mysql-init \
-            --timeout=2m || true
+            --timeout=5m || true
             kubectl logs mysql-init -n retail-app || true
 
             kubectl describe pod mysql-init -n retail-app || true
@@ -171,7 +171,7 @@ jobs:
           kubectl wait \
             --for=jsonpath='{.status.phase}'=Succeeded \
             pod/postgres-init \
-            --timeout=2m
+            --timeout=5m || true
 
           kubectl logs postgres-init -n retail-app || true
 
@@ -181,6 +181,7 @@ jobs:
             echo "Orders database initialization failed"
             exit 1
           fi
+          
       - name: Install Helm
         uses: azure/setup-helm@v4
         with:
