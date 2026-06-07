@@ -114,9 +114,27 @@ jobs:
                 -e "CREATE DATABASE IF NOT EXISTS catalog;"
             '
 
-          kubectl wait \
-            --for=condition=Succeeded pod/mysql-init \
-            --timeout=5m || true
+          for i in {1..60}; do
+            STATUS=$(kubectl get pod mysql-init -n retail-app \
+              -o jsonpath='{.status.phase}' 2>/dev/null)
+
+            echo "Pod Status: $STATUS"
+
+            if [ "$STATUS" = "Succeeded" ]; then
+              echo "Catalog database initialized successfully"
+              exit 0
+            fi
+
+            if [ "$STATUS" = "Failed" ]; then
+              kubectl logs mysql-init -n retail-app
+              exit 1
+            fi
+
+            sleep 5
+          done
+
+          echo "Timed out waiting for mysql-init pod"
+          exit 1
             kubectl logs mysql-init -n retail-app || true
 
             kubectl describe pod mysql-init -n retail-app || true
