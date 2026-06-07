@@ -197,10 +197,23 @@ jobs:
             fi
             '
 
-          kubectl wait \
-            --for=jsonpath='{.status.phase}'=Succeeded \
-            pod/postgres-init \
-            --timeout=5m || true
+          for i in {1..60}; do
+            STATUS=$(kubectl get pod postgres-init -n retail-app \
+              -o jsonpath='{.status.phase}' 2>/dev/null)
+
+            echo "Status: $STATUS"
+
+            if [ "$STATUS" = "Succeeded" ]; then
+                break
+            fi
+
+            if [ "$STATUS" = "Failed" ]; then
+                kubectl logs postgres-init -n retail-app
+                exit 1
+            fi
+
+            sleep 5
+          done
 
           kubectl logs postgres-init -n retail-app || true
 
